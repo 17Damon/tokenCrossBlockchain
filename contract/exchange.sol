@@ -7,6 +7,7 @@ contract Exchange {
         bool used;
         bool isFrom;
     }
+    //mapping(address => mapping(bytes32 => Voucher)) public vouchers;
     mapping(address => Voucher) public vouchers;
     mapping(address => bool) public swaps;
 
