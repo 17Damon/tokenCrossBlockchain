@@ -3,12 +3,11 @@ pragma solidity ^0.4.11;
 contract Exchange {
     address public owner;
     struct Voucher {
-        bytes32 voucher;
         bool used;
         bool isFrom;
     }
     //mapping(address => mapping(bytes32 => Voucher)) public vouchers;
-    mapping(address => Voucher) public vouchers;
+    mapping(bytes32 => Voucher) public vouchers;
     mapping(address => bool) public swaps;
 
     event EventDestroyToken(address _toAddr,bytes32 _voucher,uint256 _amount);
@@ -16,8 +15,7 @@ contract Exchange {
     event EventSaveVoucher(bool success);
     event EventGetToken(bool success);
 
-    function Exchange()
-    {
+    function Exchange() {
         owner = msg.sender;
     }
 
@@ -27,42 +25,39 @@ contract Exchange {
         _;
     }
 
-    function destroyToken(address _toAddr,uint256 _amount) external returns (address toAddr,bytes32 voucher){
+    function destroyToken(address _toAddr,uint256 _amount) external {
         //destroy token done
-        toAddr = _toAddr;
         voucher = makeVoucher(_toAddr,_amount);
-        vouchers[msg.sender].voucher = voucher;
-        vouchers[msg.sender].used = false;
-        vouchers[msg.sender].isFrom = false;
+        vouchers[voucher].used = false;
+        vouchers[voucher].isFrom = false;
         EventDestroyToken(_toAddr,voucher,_amount);
     }
 
-    function getToken(uint256 _amount) external returns (bool success){
+    function getToken(uint256 _amount) external returns (bool success) {
+        bytes32 memory voucher = makeVoucher(msg.sender,_amount);
         require(
-            vouchers[msg.sender].isFrom == true &&
-            vouchers[msg.sender].used == false &&
-            vouchers[msg.sender].voucher == makeVoucher(msg.sender,_amount)
+            vouchers[voucher].isFrom == true &&
+            vouchers[voucher].used == false
             );
-        vouchers[msg.sender].used = true;
+        vouchers[voucher].used = true;
         //issue token done
         success = true;
         EventGetToken(true);
     }
 
-    function saveVoucher(address _toAddr,bytes32 _voucher) external{
+    function saveVoucher(address _toAddr,bytes32 _voucher) external {
         require(swaps[msg.sender] == true);
-        vouchers[_toAddr].voucher = _voucher;
-        vouchers[_toAddr].used = false;
-        vouchers[_toAddr].isFrom = true;
+        vouchers[_voucher].used = false;
+        vouchers[_voucher].isFrom = true;
         EventSaveVoucher(true);
     }
 
-    function saveSwap(address _addr,bool alive) onlyOwner external{
+    function saveSwap(address _addr,bool alive) onlyOwner external {
         swaps[_addr] = alive;
         EventSaveSwap(true);
     }
 
-    function makeVoucher(address _toAddr,uint256 _amount) internal returns (bytes32 voucher){
+    function makeVoucher(address _toAddr,uint256 _amount) internal returns (bytes32 voucher) {
         string memory tempString = new string(64);
         bytes memory tempBytes = bytes(tempString);
         uint k = 0;
