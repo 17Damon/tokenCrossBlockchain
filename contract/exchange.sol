@@ -56,8 +56,8 @@ contract Exchange {
         EventSaveVoucher(true);
     }
 
-    function saveSwap(address _addr) onlyOwner external{
-        swaps[_addr] = true;
+    function saveSwap(address _addr,bool alive) onlyOwner external{
+        swaps[_addr] = alive;
         EventSaveSwap(true);
     }
 
