@@ -4,9 +4,7 @@ contract Exchange {
     address public owner;
     struct Voucher {
         bytes32 voucher;
-        address toAddress;
-        uint256 amount;
-        bool userd;
+        bool used;
         bool isFrom;
     }
     mapping(address => Voucher) public vouchers;
@@ -37,20 +35,18 @@ contract Exchange {
 
     function getToken(uint256 _amount) external returns (bool success){
         require(vouchers[msg.sender].isFrom == true);
-        require(vouchers[msg.sender].userd == false);
+        require(vouchers[msg.sender].used == false);
         require(vouchers[msg.sender].voucher == makeVoucher(msg.sender,_amount));
-        vouchers[msg.sender].userd = true;
+        vouchers[msg.sender].used = true;
         //issue token done
         success = true;
         EventGetToken(true);
     }
 
-    function saveVoucher(address _toAddr,bytes32 _voucher,uint256 _amount) external{
+    function saveVoucher(address _toAddr,bytes32 _voucher) external{
         require(swaps[msg.sender] == true);
         vouchers[_toAddr].voucher = _voucher;
-        vouchers[_toAddr].toAddress = _toAddr;
-        vouchers[_toAddr].amount = _amount;
-        vouchers[_toAddr].userd = false;
+        vouchers[_toAddr].used = false;
         vouchers[_toAddr].isFrom = true;
         EventSaveVoucher(true);
     }
@@ -68,9 +64,7 @@ contract Exchange {
         for (i = 0; i < 32; i++) tempBytes[k++] = bytes32(_amount)[i];
         voucher = keccak256(tempString);
         vouchers[msg.sender].voucher = voucher;
-        vouchers[msg.sender].toAddress = _toAddr;
-        vouchers[msg.sender].amount = _amount;
-        //vouchers[msg.sender].userd = false;
+        //vouchers[msg.sender].used = false;
         vouchers[msg.sender].isFrom = false;
     }
 
