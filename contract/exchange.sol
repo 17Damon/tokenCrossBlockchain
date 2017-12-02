@@ -37,6 +37,7 @@ contract Exchange {
 
     function getToken(uint256 _amount) external returns (bool success){
         require(vouchers[msg.sender].isFrom == true);
+        require(vouchers[msg.sender].userd == false);
         require(vouchers[msg.sender].voucher == makeVoucher(msg.sender,_amount));
         vouchers[msg.sender].userd = true;
         //issue token done
