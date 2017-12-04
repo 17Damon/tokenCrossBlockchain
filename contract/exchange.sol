@@ -27,14 +27,14 @@ contract Exchange {
 
     function destroyToken(address _toAddr,uint256 _amount) external {
         //destroy token done
-        voucher = makeVoucher(_toAddr,_amount);
+        bytes32 voucher = makeVoucher(_toAddr,_amount);
         vouchers[voucher].used = false;
         vouchers[voucher].isFrom = false;
         EventDestroyToken(_toAddr,voucher,_amount);
     }
 
     function getToken(uint256 _amount) external returns (bool success) {
-        bytes32 memory voucher = makeVoucher(msg.sender,_amount);
+        bytes32 voucher = makeVoucher(msg.sender,_amount);
         require(
             vouchers[voucher].isFrom == true &&
             vouchers[voucher].used == false
