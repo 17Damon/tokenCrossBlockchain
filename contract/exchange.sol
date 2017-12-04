@@ -45,7 +45,7 @@ contract Exchange {
         EventGetToken(true);
     }
 
-    function saveVoucher(address _toAddr,bytes32 _voucher) external {
+    function saveVoucher(bytes32 _voucher) external {
         require(swaps[msg.sender]);
         vouchers[_voucher].used = false;
         vouchers[_voucher].isFrom = true;
